@@ -36,9 +36,9 @@ class EA:
 
     def selectionTournament(self,evaluation,k=3):
         selected=[]
-        best=random.randint(0,len(self.population)-1)
+        best=0
         for i in range(5):
-            selection_ix = random.randint(0,len(self.population)-1)
+            selection_ix = random.randint(1,len(self.population)-1)
             # check if better (e.g. perform a tournament)
             if evaluation[best] < evaluation[selection_ix]:
                 best = selection_ix
