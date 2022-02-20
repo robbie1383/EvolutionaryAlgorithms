@@ -23,6 +23,8 @@ BLACK = (0, 0, 0)
 DARKGRAY = (125, 130, 138)
 PURPLE = (114, 85, 163)
 LIGHTPURPLE = (185, 167, 217)
+orange = (255, 100, 10)
+yellow = (255, 255, 0)
 
 
 def getColour(pressed):
@@ -38,23 +40,23 @@ class Simulation:
         pygame.init()
         self.robot = Robot(chosen_room, initPosition, 60)
         self.screen = pygame.display.set_mode((w, h))
-
         self.Sur = pygame.Surface
         pygame.display.set_caption("Modular Robot Simulator")
         self.font = pygame.font.SysFont("Pokemon GB.ttf", 50)
         self.sensor_font = pygame.font.SysFont("Pokemon GB.ttf", 20)
         self.running = True
         self.clock = pygame.time.Clock()
-        self.dust = []
+        self.clean_area = []
 
     def show(self, keys, velocities):
         self.screen.fill(WHITE)
+        for p in self.clean_area:
+            pygame.draw.circle(self.screen, yellow, (p[0], p[1]), 30)
         # Fill in robot environment
         for wall in chosen_room:
             pygame.draw.aalines(self.screen, DARKGRAY, True, wall, 50)
         # Display robot
-        rect = pygame.draw.circle(self.screen, PURPLE, (self.robot.x, self.robot.y), 30)
-        self.dust.append(rect)
+        pygame.draw.circle(self.screen, PURPLE, (self.robot.x, self.robot.y), 30)
         # Display robot direction
         pygame.draw.line(self.screen, BLACK, (self.robot.x, self.robot.y), (self.robot.frontX, self.robot.frontY), 1)
         # Display robot angle
@@ -76,6 +78,7 @@ class Simulation:
             y = y - 8
             aa = self.screen.blit(self.sensor_font.render(str(round(sensors[i])), True, BLACK), (x, y))
             angle += math.pi / 6
+
         pygame.display.flip()
 
     def run(self):
@@ -84,6 +87,7 @@ class Simulation:
             self.clock.tick(50)
             keys, velocities = self.update(delta_t)
             self.show(keys, velocities)
+            self.clean_area.append([self.robot.x, self.robot.y])
             delta_t = velocities[3]
 
     def update(self, delta_t):
