@@ -67,6 +67,43 @@ class Robot:
         y = random.randint(position[1], position[1])
         return x, y
 
+    def moveFromVelocities(self, Vr, Vl, delta_t):
+        self.Vr = Vr
+        self.Vl = Vl
+
+        # If it's moving
+        if self.Vr != 0 or self.Vl != 0:
+            # Make sure not to get a division by zero when velocities are the same
+            if self.Vr == self.Vl:
+                next_x = self.x + ((self.Vl + self.Vr) / 2) * np.cos(self.theta) * delta_t
+                next_y = self.y - ((self.Vl + self.Vr) / 2) * np.sin(self.theta) * delta_t
+                new_theta = self.theta + (self.Vr - self.Vl) / (2 * self.radius) * delta_t
+            else:
+                R = self.radius * (self.Vl + self.Vr) / (self.Vr - self.Vl)
+                w = (self.Vr - self.Vl) / (self.radius * 2)
+                # Compute ICC
+                ICC = [self.x - R * np.sin(-self.theta), self.y + R * np.cos(self.theta)]
+                result = np.transpose(np.matmul(
+                    np.array([[np.cos(w * delta_t), -np.sin(w * delta_t), 0],
+                              [np.sin(w * delta_t), np.cos(w * delta_t), 0],
+                              [0, 0, 1]]),
+                    np.transpose(np.array([self.x - ICC[0], self.y - ICC[1], self.theta]))) + np.array(
+                    [ICC[0], ICC[1], w * delta_t])).transpose()
+                next_x, next_y, new_theta = result[0], result[1], result[2]
+            # update  sensors
+            self.sensors, walls = self.distanceToSensors(walls)
+            # handle collision
+            collision = self.detectCollision(next_x, next_y, walls)
+            if collision:
+                test = "Danger!"
+            # Transfer results from the ICC computation
+            self.x = next_x
+            self.y = next_y
+            self.theta = new_theta
+            self.frontX, self.frontY = self.rotate(self.theta, self.radius)
+
+        return self.Vl, self.Vr, np.round(np.degrees(self.theta), 2), delta_t, test
+
     def move(self, movement, delta_t, walls):
         # Check keys for movement
         # movement = [w, s, o, l, x, t, g]

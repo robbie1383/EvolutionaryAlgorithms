@@ -15,7 +15,7 @@ room1 = [line0, line1, line2, line3]
 line_star = [(450, 50), (539, 327), (830, 326), (595, 496), (658, 773), (450, 602), (165, 773), (305, 496), (70, 326),
              (360, 327), (450, 50)]
 star_room = [line_star]
-chosen_room = star_room
+chosen_room = room1
 initPosition = [400, 600]
 # A list of RGB values for the colours used in the game.
 WHITE = (255, 255, 255)
@@ -25,14 +25,6 @@ PURPLE = (114, 85, 163)
 LIGHTPURPLE = (185, 167, 217)
 orange = (255, 100, 10)
 yellow = (255, 255, 0)
-
-
-def getColour(pressed):
-    if pressed:
-        return PURPLE
-    else:
-        return LIGHTPURPLE
-
 
 class Simulation:
 
@@ -48,18 +40,18 @@ class Simulation:
         self.clock = pygame.time.Clock()
         self.clean_area = []
 
-    def show(self, keys, velocities):
+    def show(self, velocities):
         self.screen.fill(WHITE)
         for p in self.clean_area:
+
             pygame.draw.circle(self.screen, yellow, (p[0], p[1]), 30)
         # Fill in robot environment
         for wall in chosen_room:
             pygame.draw.aalines(self.screen, DARKGRAY, True, wall, 50)
         # Display robot
         pygame.draw.circle(self.screen, PURPLE, (self.robot.x, self.robot.y), 30)
-        # Display robot direction
+
         pygame.draw.line(self.screen, BLACK, (self.robot.x, self.robot.y), (self.robot.frontX, self.robot.frontY), 1)
-        # Display robot angle
         angle_x = (self.robot.x + self.robot.frontX) / 2 - 5
         angle_y = (self.robot.y + self.robot.frontY) / 2 - 5
         self.screen.blit(self.sensor_font.render(str(round(velocities[2] % 360)), True, BLACK), (angle_x, angle_y))
@@ -69,6 +61,7 @@ class Simulation:
         right_x, right_y = self.robot.rotate(self.robot.theta - math.pi / 2, self.robot.radius - 25)
         self.screen.blit(self.sensor_font.render(str(round(velocities[1])), True, BLACK), (right_x, right_y))
         self.screen.blit(self.sensor_font.render(velocities[4], True, BLACK), (5, 5))
+
         # display  12 sensors
         angle = copy.copy(self.robot.theta)
         sensors = self.robot.sensors
@@ -76,7 +69,7 @@ class Simulation:
             x, y = self.robot.rotate(angle, self.robot.radius + 15)
             x = x - 10
             y = y - 8
-            aa = self.screen.blit(self.sensor_font.render(str(round(sensors[i])), True, BLACK), (x, y))
+            self.screen.blit(self.sensor_font.render(str(round(sensors[i])), True, BLACK), (x, y))
             angle += math.pi / 6
 
         pygame.display.flip()
@@ -85,8 +78,8 @@ class Simulation:
         delta_t = 0.01
         while self.running:
             self.clock.tick(50)
-            keys, velocities = self.update(delta_t)
-            self.show(keys, velocities)
+            velocities = self.update(delta_t)
+            self.show(velocities)
             self.clean_area.append([self.robot.x, self.robot.y])
             delta_t = velocities[3]
 
@@ -103,13 +96,11 @@ class Simulation:
                     keys[pygame.K_t], keys[pygame.K_g]]
 
         velocities = self.robot.move(movement, delta_t, chosen_room)
-
-        return movement, velocities
+        return velocities
 
     def stop(self):
         self.running = False
         exit()
-
 
 def main():
     simulation = Simulation()
