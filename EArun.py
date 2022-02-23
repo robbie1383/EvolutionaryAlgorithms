@@ -36,8 +36,8 @@ def main():
     mins = []
     means = []
     r = 5
-    optimization = rosenbrock
-    population = EA(20, r, optimization)
+    optimization = rastrigin
+    population = EA(10, r, optimization)
     generation = 1
 
     for i in range(20):
@@ -61,14 +61,14 @@ def main():
         os.remove(filename)
 
     plt.plot(mins)
-    plt.xlabel("Minimum evaluation")
-    plt.ylabel("Generation")
+    plt.ylabel("Minimum evaluation")
+    plt.xlabel("Generation")
     plt.title("Minimum evaluations per generation")
     plt.show()
 
     plt.plot(means)
-    plt.xlabel("Average evaluation")
-    plt.ylabel("Generation")
+    plt.ylabel("Average evaluation")
+    plt.xlabel("Generation")
     plt.title("Average evaluations per generation")
     plt.show()
 
