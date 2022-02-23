@@ -1,6 +1,6 @@
 import os
 import imageio
-from EA import EA
+from EABenchmark.EA import EA
 import numpy as np
 from matplotlib import pyplot as plt
 
