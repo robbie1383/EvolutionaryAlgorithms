@@ -67,9 +67,10 @@ class Robot:
         y = random.randint(position[1], position[1])
         return x, y
 
-    def moveFromVelocities(self, Vr, Vl, delta_t):
+    def moveFromVelocities(self, Vr, Vl, delta_t, walls):
         self.Vr = Vr
         self.Vl = Vl
+        test = "Safe"
 
         # If it's moving
         if self.Vr != 0 or self.Vl != 0:
@@ -102,7 +103,7 @@ class Robot:
             self.theta = new_theta
             self.frontX, self.frontY = self.rotate(self.theta, self.radius)
 
-        return self.Vl, self.Vr, np.round(np.degrees(self.theta), 2), delta_t, test
+        return test, self.x, self.y
 
     def move(self, movement, delta_t, walls):
         # Check keys for movement
