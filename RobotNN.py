@@ -2,12 +2,13 @@ import numpy as np
 from Robot import Robot
 import time
 
+
 class RobotNN():
 
     def __init__(self):
         self.network = []
-        hiddenLayer = [np.random.rand(1, 16)[0] for i in range(4)]  # size + 1 for the bias
-        outputLayer = [np.random.rand(1, 4)[0] for i in range(2)]  # size + 1 for the bias
+        hiddenLayer = [np.random.rand(1, 16)[0] / 10 for i in range(4)]  # size + 1 for the bias
+        outputLayer = [np.random.rand(1, 4)[0] / 10 for i in range(2)]  # size + 1 for the bias
         self.network.append(hiddenLayer)
         self.network.append(outputLayer)
 
@@ -61,6 +62,7 @@ class RobotEA():
                 visited.append(readings[1:2])
                 if readings[0] == "Danger!":
                     collisions += 1
+                print(visited)
 
             # Calculate fitness given te movement readings
         print(evaluations)
@@ -69,7 +71,7 @@ class RobotEA():
     def selection(self, evaluations):
         sorted = evaluations.copy()
         sorted.sort(reverse=True)
-        selected = [self.population[evaluations.index(sorted[i])] for i in range(int(len(self.population)/2))]
+        selected = [self.population[evaluations.index(sorted[i])] for i in range(int(len(self.population) / 2))]
         return selected
 
     def reproduction(self, selected):

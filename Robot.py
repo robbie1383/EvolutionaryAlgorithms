@@ -97,9 +97,10 @@ class Robot:
             collision = self.detectCollision(next_x, next_y, walls)
             if collision:
                 test = "Danger!"
+            else:
+                self.x = next_x
+                self.y = next_y
             # Transfer results from the ICC computation
-            self.x = next_x
-            self.y = next_y
             self.theta = new_theta
             self.frontX, self.frontY = self.rotate(self.theta, self.radius)
 
