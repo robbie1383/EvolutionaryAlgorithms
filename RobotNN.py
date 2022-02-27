@@ -55,16 +55,20 @@ class RobotEA():
             robot = Robot(self.room, self.initPosition, 60)
             start = time.time()
             visited = []
-            collisions = 0
-            while time.time() - start < 30:
+            fitness = 0
+            while time.time() - start < 10:
                 [Vl, Vr] = network.activations(robot.sensors)[1]
                 readings = robot.moveFromVelocities(Vr, Vl, self.delta_t, self.room)
-                visited.append(readings[1:2])
-                if readings[0] == "Danger!":
-                    collisions += 1
-                print(visited)
-
+                visited.append(readings[1:])
+                fitness = readings[0]
             # Calculate fitness given te movement readings
+            print("collision times:", robot.collision)
+            print("dust size:", len(robot.dust))
+            print("cleaned  area size that close to wall ", len(robot.wall_close_dust))
+            print("short moves", robot.short_move)
+            print("move counts", robot.move_counter)
+            print("-------------------------------")
+            evaluations.append(fitness)
         print(evaluations)
         return evaluations
 
@@ -78,6 +82,9 @@ class RobotEA():
         children = []
         # Florene
         return children
+
+    def fitness(self):
+        print("")
 
 
 sev = 35  # SCREEN_EDGE_VACANCY

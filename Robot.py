@@ -50,7 +50,6 @@ class Robot:
 
     def __init__(self, walls, initPosition, size):
         self.radius = int(size / 2)
-
         self.x, self.y = self.initPosition(initPosition)
         self.frontX = self.x + self.radius
         self.frontY = self.y
@@ -60,7 +59,16 @@ class Robot:
         self.speed = 3
         self.sensors, _ = self.distanceToSensors(walls)
         self.stop = False
-        self.last_wall = []
+        # Cover as much area as possible
+        self.dust = set()
+        # For fitness: Avoids robots that do not move enough
+        self.short_move = 0
+        self.clean_dust()
+        # For fitness:Motivates robots to move closer to walls
+        self.wall_close_dust = set()
+        # For fitness collision free
+        self.collision = 0
+        self.move_counter = 0
 
     def initPosition(self, position):
         x = random.randint(position[0], position[0])
@@ -71,7 +79,7 @@ class Robot:
         self.Vr = Vr
         self.Vl = Vl
         test = "Safe"
-
+        self.move_counter = self.move_counter + 1
         # If it's moving
         if self.Vr != 0 or self.Vl != 0:
             # Make sure not to get a division by zero when velocities are the same
@@ -97,14 +105,25 @@ class Robot:
             collision = self.detectCollision(next_x, next_y, walls)
             if collision:
                 test = "Danger!"
+                self.collision = self.collision + 1
             else:
+                # Fitness, Avoids robots that do not move enough: move distance<0.2
+                # print(math.sqrt((next_x - self.x) ** 2 + (next_y - self.y) ** 2))
+                if math.sqrt((next_x - self.x) ** 2 + (next_y - self.y) ** 2) <= 0.25:
+                    self.short_move = self.short_move + 1
                 self.x = next_x
                 self.y = next_y
+            # Fitness: Cover as much area as possible: simulate dust, use removed dust as fitness
+            dusts = self.clean_dust()
+            self.dust.update(dusts)
+            if min(self.sensors) < 3:
+                self.wall_close_dust.update(dusts)
+
             # Transfer results from the ICC computation
             self.theta = new_theta
             self.frontX, self.frontY = self.rotate(self.theta, self.radius)
-
-        return test, self.x, self.y
+        fit = self.fitness()
+        return fit, self.x, self.y
 
     def move(self, movement, delta_t, walls):
         # Check keys for movement
@@ -147,9 +166,17 @@ class Robot:
             collision = self.detectCollision(next_x, next_y, walls)
             if collision:
                 test = "Danger!"
+                self.collision = self.collision + 1
+            # Avoids robots that do not move enough: move distance<1
+            if math.sqrt((next_x - self.x) ** 2 + (next_y - self.y) ** 2) <= 1:
+                self.short_move = self.short_move + 1
             # Transfer results from the ICC computation
             self.x = next_x
             self.y = next_y
+            dusts = self.clean_dust()
+            self.dust.update(dusts)
+            if min(self.sensors) < 3:
+                self.wall_close_dust.update(dusts)
             self.theta = new_theta
             self.frontX, self.frontY = self.rotate(self.theta, self.radius)
 
@@ -211,11 +238,6 @@ class Robot:
         if (inters_x - wall[0][0]) * (inters_x - wall[1][0]) > 0 or (inters_y - wall[0][1]) * (
                 inters_y - wall[1][1]) > 0:
             intersection_on_wall = False
-        # if theta_wall_move == 0:
-        #     safe_distance = 1000
-        #     print("12312")
-        # else:
-        #     safe_distance = abs(self.radius / np.sin(theta_wall_move * math.pi / 180))
         robot_to_wall_point = min(((self.x - wall[0][0]) ** 2 + (self.y - wall[0][1]) ** 2) ** 0.5,
                                   ((self.x - wall[1][0]) ** 2 + (self.y - wall[1][1]) ** 2) ** 0.5)
         if towards_wall:
@@ -249,3 +271,15 @@ class Robot:
         collision2 = self.robot_and_wall(move_x, move_y, second_wall, second_collision_dis)
         collision = collision1 or collision2
         return collision
+
+    def clean_dust(self):
+        dusts = set()
+        for x in range(int(self.x) - self.radius - 1, int(self.x) + self.radius + 1):
+            for y in range(int(self.y) - self.radius - 1, int(self.y) + self.radius + 1):
+                # Calculate the distance from the center of grid to the robot center
+                if math.sqrt((x + 0.5 - self.x) ** 2 + (y + 0.5 - self.y) ** 2) <= self.radius:
+                    dusts.add(int(y) * 900 + int(x))
+        return dusts
+
+    def fitness(self):
+        return len(self.dust) - 1000 * self.collision + len(self.wall_close_dust) - self.short_move
