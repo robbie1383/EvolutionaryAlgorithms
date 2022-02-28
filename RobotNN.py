@@ -81,13 +81,10 @@ class RobotEA():
     def reproduction(self, selected):
         children = []
         middle = int(len(selected))
-        print("selected")
-        for i in range (len(selected)):
-            print(selected[i].network)
+
         for index in range(middle):
             children.append(selected[index])
-            #print("old")
-            #print(selected[index].network)
+
             selected[index].network[0] = np.add(selected[index].network[0],
                                 ((np.random.random(), np.random.random(),np.random.random(),np.random.random(),
                                 np.random.random(),np.random.random(),np.random.random(), np.random.random(),
@@ -108,12 +105,9 @@ class RobotEA():
             selected[index].network[1]= np.add(selected[index].network[1],
                                 ((np.random.random(), np.random.random(), np.random.random(), np.random.random()),
                                 (np.random.random(), np.random.random(), np.random.random(),np.random.random())))
-            #print("new")
-            #print(selected[index].network)
+
             children.append(selected[index])
-        print("children")
-        for j in range (len(children)):
-            print(children[j].network)
+
         return children
 
     def fitness(self):
