@@ -58,7 +58,6 @@ class EA:
             children.append(selected[index])
             newChild = np.add(selected[index], (np.random.random(), np.random.random()))
             children.append(newChild)
-
         return children
 
     def checkBounds(self, children):

@@ -11,7 +11,7 @@ class RobotNN():
         outputLayer = [np.random.rand(1, 4)[0] / 10 for i in range(2)]  # size + 1 for the bias
         self.network.append(hiddenLayer)
         self.network.append(outputLayer)
-
+        len(self.network)
         self.feedback = [0, 0, 0, 0]
 
     def activations(self, input):
@@ -49,7 +49,6 @@ class RobotEA():
 
     def evaluate(self):
         evaluations = []
-
         for network in self.population:
             # Simulate robot movement for 30 seconds
             robot = Robot(self.room, self.initPosition, 60)
@@ -76,15 +75,59 @@ class RobotEA():
         sorted = evaluations.copy()
         sorted.sort(reverse=True)
         selected = [self.population[evaluations.index(sorted[i])] for i in range(int(len(self.population) / 2))]
+
         return selected
 
     def reproduction(self, selected):
         children = []
-        # Florene
+        middle = int(len(selected))
+        print("selected")
+        for i in range (len(selected)):
+            print(selected[i].network)
+        for index in range(middle):
+            children.append(selected[index])
+            #print("old")
+            #print(selected[index].network)
+            selected[index].network[0] = np.add(selected[index].network[0],
+                                ((np.random.random(), np.random.random(),np.random.random(),np.random.random(),
+                                np.random.random(),np.random.random(),np.random.random(), np.random.random(),
+                                np.random.random(),np.random.random(),np.random.random(),np.random.random(),
+                                np.random.random(), np.random.random(),np.random.random(),np.random.random()),
+                              (np.random.random(), np.random.random(), np.random.random(), np.random.random(),
+                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
+                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
+                                np.random.random(), np.random.random(), np.random.random(), np.random.random()),
+                              (np.random.random(), np.random.random(), np.random.random(), np.random.random(),
+                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
+                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
+                                np.random.random(), np.random.random(), np.random.random(), np.random.random()),
+                              (np.random.random(), np.random.random(), np.random.random(), np.random.random(),
+                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
+                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
+                                np.random.random(), np.random.random(), np.random.random(), np.random.random())))
+            selected[index].network[1]= np.add(selected[index].network[1],
+                                ((np.random.random(), np.random.random(), np.random.random(), np.random.random()),
+                                (np.random.random(), np.random.random(), np.random.random(),np.random.random())))
+            #print("new")
+            #print(selected[index].network)
+            children.append(selected[index])
+        print("children")
+        for j in range (len(children)):
+            print(children[j].network)
         return children
 
     def fitness(self):
         print("")
+
+
+
+
+
+
+
+
+
+
 
 
 sev = 35  # SCREEN_EDGE_VACANCY
