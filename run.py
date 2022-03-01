@@ -1,8 +1,10 @@
 import copy
 import math
 import pygame
+from matplotlib import pyplot as plt
 
 from Robot import Robot
+from RobotNN import RobotEA
 
 sev = 35  # SCREEN_EDGE_VACANCY
 w = 900
@@ -102,10 +104,39 @@ class Simulation:
         self.running = False
         exit()
 
-def main():
-    simulation = Simulation()
-    simulation.run()
+def plot(mins, means):
+    plt.plot(mins)
+    plt.ylabel("Minimum evaluation")
+    plt.xlabel("Generation")
+    plt.title("Minimum evaluations per generation")
+    plt.show()
 
+    plt.plot(means)
+    plt.ylabel("Average evaluation")
+    plt.xlabel("Generation")
+    plt.title("Average evaluations per generation")
+    plt.show()
+
+def main():
+    networks = open("networks.txt", "a")
+    iterations = 100
+    ea = RobotEA(room1, 0.01, initPosition)
+    mins = []
+    means = []
+    print("Started learning.")
+    for generation in range(iterations+1):
+        print(generation, " / ", iterations)
+        min, avg, best = ea.evolve()
+        mins.append(min)
+        means.append(avg)
+
+        if generation % 20 == 0:
+            print("Added generation ", generation, "to the file.\n")
+            networks.write("Generation "+ str(generation)+"\n")
+            networks.write(str(best)+"\n")
+
+    plot(mins, means)
+    networks.close()
 
 if __name__ == "__main__":
     main()

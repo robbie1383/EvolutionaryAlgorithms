@@ -9,9 +9,7 @@ class EA:
 
     def evolve(self):
         evaluations = self.evaluate()
-        #evaluations = self.evaluateOther()
         selected = self.selection(evaluations)
-        #selected = self.selectionTournament(evaluations)
         children = self.crossover(selected)
         self.population = self.checkBounds(children)
         return np.min(evaluations), np.mean(evaluations)

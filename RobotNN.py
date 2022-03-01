@@ -11,7 +11,6 @@ class RobotNN():
         outputLayer = [np.random.rand(1, 4)[0] / 10 for i in range(2)]  # size + 1 for the bias
         self.network.append(hiddenLayer)
         self.network.append(outputLayer)
-        len(self.network)
         self.feedback = [0, 0, 0, 0]
 
     def activations(self, input):
@@ -41,11 +40,11 @@ class RobotEA():
 
     def evolve(self):
         evaluations = self.evaluate()
-        selected = self.selection(evaluations)
+        selected, best = self.selection(evaluations)
         children = self.reproduction(selected)
         self.population = children
 
-        return np.min(evaluations), np.mean(evaluations)
+        return np.min(evaluations), np.mean(evaluations), best
 
     def evaluate(self):
         evaluations = []
@@ -61,22 +60,24 @@ class RobotEA():
                 visited.append(readings[1:])
                 fitness = readings[0]
             # Calculate fitness given te movement readings
+            """
             print("collision times:", robot.collision)
             print("dust size:", len(robot.dust))
             print("cleaned  area size that close to wall ", len(robot.wall_close_dust))
             print("short moves", robot.short_move)
             print("move counts", robot.move_counter)
             print("-------------------------------")
+            """
             evaluations.append(fitness)
-        print(evaluations)
+        #print(evaluations)
         return evaluations
 
     def selection(self, evaluations):
         sorted = evaluations.copy()
         sorted.sort(reverse=True)
         selected = [self.population[evaluations.index(sorted[i])] for i in range(int(len(self.population) / 2))]
-
-        return selected
+        best = selected[0].network
+        return selected, best
 
     def reproduction(self, selected):
         children = []
@@ -110,30 +111,3 @@ class RobotEA():
 
         return children
 
-    def fitness(self):
-        print("")
-
-
-
-
-
-
-
-
-
-
-
-
-sev = 35  # SCREEN_EDGE_VACANCY
-w = 900
-h = 900
-line0 = [(sev, sev), (sev, h - sev), (w - sev, h - sev), (w - sev, sev), (sev, sev)]
-line1 = [(300, sev), (300, 750)]
-line2 = [(600, sev), (600, 300)]
-line3 = [(600, 450), (600, h - sev)]
-room1 = [line0, line1, line2, line3]
-initPosition = [400, 600]
-delta_t = 0.01
-
-test = RobotEA(room1, delta_t, initPosition)
-test.evolve()
