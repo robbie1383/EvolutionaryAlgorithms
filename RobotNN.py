@@ -13,7 +13,7 @@ class RobotNN():
             self.network.append(hiddenLayer)
             self.network.append(outputLayer)
             self.feedback = [0, 0, 0, 0]
-        else :
+        else:
             self.network = network
             self.feedback = [0, 0, 0, 0]
 
@@ -61,17 +61,9 @@ class RobotEA():
             while time.time() - start < 10:
                 [Vl, Vr] = network.activations(robot.sensors)[1]
                 readings, _ = robot.moveFromVelocities(Vr, Vl, self.delta_t, self.room)
-                visited.append(readings[1:])
+                # visited.append(readings[1:])
                 fitness = readings[0]
             # Calculate fitness given te movement readings
-            """
-            print("collision times:", robot.collision)
-            print("dust size:", len(robot.dust))
-            print("cleaned  area size that close to wall ", len(robot.wall_close_dust))
-            print("short moves", robot.short_move)
-            print("move counts", robot.move_counter)
-            print("-------------------------------")
-            """
             evaluations.append(fitness)
         # print(evaluations)
         return evaluations
@@ -92,55 +84,3 @@ class RobotEA():
                 aux.append(np.mean([selected[0].network[layer], selected[i].network[layer]], 0))
             children.append(RobotNN(aux))
         return children
-"""
-    def reproduction(self, selected):
-        children = []
-        middle = int(len(selected))
-        
-        for index in range(middle):
-            children.append(selected[index])
-
-            selected[index].network[0] = np.add(selected[index].network[0],
-                                                ((np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random()),
-                                                 (np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random()),
-                                                 (np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random()),
-                                                 (np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random(),
-                                                  np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random())))
-            selected[index].network[1] = np.add(selected[index].network[1],
-                                                ((np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random()),
-                                                 (np.random.random(), np.random.random(), np.random.random(),
-                                                  np.random.random())))
-
-            children.append(selected[index])
-
-        return children
-"""
-

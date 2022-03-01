@@ -3,7 +3,6 @@ import math
 import pygame
 from matplotlib import pyplot as plt
 import re
-
 from Robot import Robot
 from RobotNN import RobotEA, RobotNN
 
@@ -77,10 +76,9 @@ class Simulation:
 
         pygame.display.flip()
 
-    def run(self, nn):
-        delta_t = 0.01
+    def run(self, nn, delta_t):
         while self.running:
-            self.clock.tick(50)
+            self.clock.tick(100)
             velocities = self.updatefromNN(delta_t, nn)
             self.show(velocities)
             self.clean_area.append([self.robot.x, self.robot.y])
@@ -130,10 +128,10 @@ def plot(mins, means):
     plt.title("Average evaluations per generation")
     plt.show()
 
-def train():
+
+def train(iterations, theta_t):
     networks = open("networks.txt", "w")
-    iterations = 50
-    ea = RobotEA(room1, 0.01, initPosition)
+    ea = RobotEA(room1, theta_t, initPosition)
     mins = []
     means = []
     print("Started learning.")
@@ -143,16 +141,15 @@ def train():
         mins.append(min)
         means.append(avg)
         print("Average evaluation after learning:", avg)
-
         if generation % 10 == 0:
             print("Added generation ", generation, "to the file.")
             networks.write("Generation " + str(generation) + "\n")
             networks.write(str(best) + "\n")
-
     plot(mins, means)
     networks.close()
 
-def test(generation):
+
+def display_result(generation, delta_t):
     networks = open("networks.txt", "r")
     text = networks.read()
     numbers = re.sub("[^0123456789\.]", " ", text)
@@ -161,7 +158,7 @@ def test(generation):
     net = []
     layer1 = []
     for i in range(4):
-        layer1.append([numbers[i] for i in range(start+1, start+17)])
+        layer1.append([numbers[i] for i in range(start + 1, start + 17)])
         start += 16
     net.append(layer1)
     layer2 = []
@@ -173,12 +170,15 @@ def test(generation):
     nn = RobotNN(net)
     print(len(nn.network))
     sim = Simulation()
-    sim.run(nn)
+    sim.run(nn, delta_t)
     networks.close()
 
+
 def main():
-    #train()
-    test(50)
+    delta_t = 0.09
+    generations = 10
+    # train(generations, delta_t)
+    display_result(10, delta_t)
 
 
 if __name__ == "__main__":

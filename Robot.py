@@ -50,6 +50,7 @@ class Robot:
 
     def __init__(self, walls, initPosition, size):
         self.radius = int(size / 2)
+        self.sensor_limit = self.radius
         self.x, self.y = self.initPosition(initPosition)
         self.frontX = self.x + self.radius
         self.frontY = self.y
@@ -103,7 +104,7 @@ class Robot:
             self.sensors, walls = self.distanceToSensors(walls)
             # handle collision
             move_distance = math.sqrt((next_x - self.x) ** 2 + (next_y - self.y) ** 2)
-            if move_distance <= 0.25 or move_distance > self.radius:
+            if move_distance <= 1 or move_distance > self.radius / 2:
                 self.invalid_move = self.invalid_move + 1
             else:
                 collision = self.detectCollision(next_x, next_y, walls)
@@ -117,7 +118,7 @@ class Robot:
                 # Fitness: Cover as much area as possible: simulate dust, use removed dust as fitness
                 dusts = self.clean_dust()
                 self.dust.update(dusts)
-                if min(self.sensors) < 3:
+                if min(self.sensors) < 6:
                     self.wall_close_dust.update(dusts)
 
             # Transfer results from the ICC computation
@@ -189,6 +190,8 @@ class Robot:
         angle = copy(self.theta)
         for i in range(12):
             min_dist_out_wall, wall_out = self.distance(all_walls, angle)
+            if min_dist_out_wall >= self.sensor_limit:
+                min_dist_out_wall = self.sensor_limit
             dist.append(min_dist_out_wall)
             detected_walls.append(wall_out)
             angle += math.pi / 6
@@ -227,7 +230,6 @@ class Robot:
     def robot_and_wall(self, move_x, move_y, wall, closest_sensor):
         collision = False
         towards_wall = False
-        intersection_on_wall = True
         theta_wall = slope(wall)
         theta_move = slope([[self.x, self.y], [move_x, move_y]])
         theta_wall_move = theta_wall - theta_move
@@ -236,18 +238,13 @@ class Robot:
         inters_x, inters_y = get_intersection((self.x, self.y), (move_x, move_y), wall[0], wall[1])
         if (move_x - inters_x) * (move_x - self.x) <= 0 and (move_y - inters_y) * (move_y - self.y) <= 0:
             towards_wall = True
-        if (inters_x - wall[0][0]) * (inters_x - wall[1][0]) > 0 or (inters_y - wall[0][1]) * (
-                inters_y - wall[1][1]) > 0:
-            intersection_on_wall = False
-        robot_to_wall_point = min(((self.x - wall[0][0]) ** 2 + (self.y - wall[0][1]) ** 2) ** 0.5,
-                                  ((self.x - wall[1][0]) ** 2 + (self.y - wall[1][1]) ** 2) ** 0.5)
-        if towards_wall:
-            if intersection_on_wall:
-                if distance_vertical > closest_sensor:
-                    collision = True
-            else:
-                if robot_to_wall_point < self.radius:
-                    collision = True
+        robot_to_wall_point = min(((move_x - wall[0][0]) ** 2 + (move_y - wall[0][1]) ** 2) ** 0.5,
+                                  ((move_x - wall[1][0]) ** 2 + (move_y - wall[1][1]) ** 2) ** 0.5)
+        if robot_to_wall_point < self.radius:
+            collision = True
+        else:
+            if towards_wall and distance_vertical + 3 > closest_sensor:
+                collision = True
         return collision
 
     def detectCollision(self, move_x, move_y, walls):
@@ -283,4 +280,4 @@ class Robot:
         return dusts
 
     def fitness(self):
-        return len(self.dust) - 1000 * self.collision + len(self.wall_close_dust) - self.invalid_move
+        return len(self.dust) - self.collision + 100 * len(self.wall_close_dust) - self.invalid_move
