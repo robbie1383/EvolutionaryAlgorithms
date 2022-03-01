@@ -69,7 +69,7 @@ class RobotEA():
             print("-------------------------------")
             """
             evaluations.append(fitness)
-        #print(evaluations)
+        # print(evaluations)
         return evaluations
 
     def selection(self, evaluations):
@@ -87,27 +87,44 @@ class RobotEA():
             children.append(selected[index])
 
             selected[index].network[0] = np.add(selected[index].network[0],
-                                ((np.random.random(), np.random.random(),np.random.random(),np.random.random(),
-                                np.random.random(),np.random.random(),np.random.random(), np.random.random(),
-                                np.random.random(),np.random.random(),np.random.random(),np.random.random(),
-                                np.random.random(), np.random.random(),np.random.random(),np.random.random()),
-                              (np.random.random(), np.random.random(), np.random.random(), np.random.random(),
-                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
-                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
-                                np.random.random(), np.random.random(), np.random.random(), np.random.random()),
-                              (np.random.random(), np.random.random(), np.random.random(), np.random.random(),
-                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
-                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
-                                np.random.random(), np.random.random(), np.random.random(), np.random.random()),
-                              (np.random.random(), np.random.random(), np.random.random(), np.random.random(),
-                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
-                                np.random.random(), np.random.random(), np.random.random(), np.random.random(),
-                                np.random.random(), np.random.random(), np.random.random(), np.random.random())))
-            selected[index].network[1]= np.add(selected[index].network[1],
-                                ((np.random.random(), np.random.random(), np.random.random(), np.random.random()),
-                                (np.random.random(), np.random.random(), np.random.random(),np.random.random())))
+                                                ((np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random()),
+                                                 (np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random()),
+                                                 (np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random()),
+                                                 (np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random(),
+                                                  np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random())))
+            selected[index].network[1] = np.add(selected[index].network[1],
+                                                ((np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random()),
+                                                 (np.random.random(), np.random.random(), np.random.random(),
+                                                  np.random.random())))
 
             children.append(selected[index])
 
         return children
-

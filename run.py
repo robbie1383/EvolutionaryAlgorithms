@@ -28,6 +28,7 @@ LIGHTPURPLE = (185, 167, 217)
 orange = (255, 100, 10)
 yellow = (255, 255, 0)
 
+
 class Simulation:
 
     def __init__(self):
@@ -45,7 +46,6 @@ class Simulation:
     def show(self, velocities):
         self.screen.fill(WHITE)
         for p in self.clean_area:
-
             pygame.draw.circle(self.screen, yellow, (p[0], p[1]), 30)
         # Fill in robot environment
         for wall in chosen_room:
@@ -104,6 +104,7 @@ class Simulation:
         self.running = False
         exit()
 
+
 def plot(mins, means):
     plt.plot(mins)
     plt.ylabel("Minimum evaluation")
@@ -117,6 +118,7 @@ def plot(mins, means):
     plt.title("Average evaluations per generation")
     plt.show()
 
+
 def main():
     networks = open("networks.txt", "a")
     iterations = 100
@@ -124,7 +126,7 @@ def main():
     mins = []
     means = []
     print("Started learning.")
-    for generation in range(iterations+1):
+    for generation in range(iterations + 1):
         print(generation, " / ", iterations)
         min, avg, best = ea.evolve()
         mins.append(min)
@@ -132,11 +134,12 @@ def main():
 
         if generation % 20 == 0:
             print("Added generation ", generation, "to the file.\n")
-            networks.write("Generation "+ str(generation)+"\n")
-            networks.write(str(best)+"\n")
+            networks.write("Generation " + str(generation) + "\n")
+            networks.write(str(best) + "\n")
 
     plot(mins, means)
     networks.close()
+
 
 if __name__ == "__main__":
     main()
