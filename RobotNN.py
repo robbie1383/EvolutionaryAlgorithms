@@ -60,7 +60,7 @@ class RobotEA():
             fitness = 0
             while time.time() - start < 10:
                 [Vl, Vr] = network.activations(robot.sensors)[1]
-                readings = robot.moveFromVelocities(Vr, Vl, self.delta_t, self.room)
+                readings, _ = robot.moveFromVelocities(Vr, Vl, self.delta_t, self.room)
                 visited.append(readings[1:])
                 fitness = readings[0]
             # Calculate fitness given te movement readings

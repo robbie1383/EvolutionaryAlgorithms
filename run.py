@@ -2,9 +2,10 @@ import copy
 import math
 import pygame
 from matplotlib import pyplot as plt
+import re
 
 from Robot import Robot
-from RobotNN import RobotEA
+from RobotNN import RobotEA, RobotNN
 
 sev = 35  # SCREEN_EDGE_VACANCY
 w = 900
@@ -76,11 +77,11 @@ class Simulation:
 
         pygame.display.flip()
 
-    def run(self):
+    def run(self, nn):
         delta_t = 0.01
         while self.running:
             self.clock.tick(50)
-            velocities = self.update(delta_t)
+            velocities = self.updatefromNN(delta_t, nn)
             self.show(velocities)
             self.clean_area.append([self.robot.x, self.robot.y])
             delta_t = velocities[3]
@@ -98,6 +99,17 @@ class Simulation:
                     keys[pygame.K_t], keys[pygame.K_g]]
 
         velocities = self.robot.move(movement, delta_t, chosen_room)
+        return velocities
+
+    def updatefromNN(self, delta_t, nn):
+        # Quit the simulation
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.stop()
+                pygame.quit()
+        [Vl, Vr] = nn.activations(self.robot.sensors)[1]
+        _, velocities = self.robot.moveFromVelocities(Vr, Vl, delta_t, chosen_room)
+        print(velocities)
         return velocities
 
     def stop(self):
@@ -118,9 +130,8 @@ def plot(mins, means):
     plt.title("Average evaluations per generation")
     plt.show()
 
-
-def main():
-    networks = open("networks.txt", "a")
+def train():
+    networks = open("networks.txt", "w")
     iterations = 50
     ea = RobotEA(room1, 0.01, initPosition)
     mins = []
@@ -140,6 +151,34 @@ def main():
 
     plot(mins, means)
     networks.close()
+
+def test(generation):
+    networks = open("networks.txt", "r")
+    text = networks.read()
+    numbers = re.sub("[^0123456789\.]", " ", text)
+    numbers = [float(i) for i in numbers.split(" ") if len(i) > 0]
+    start = numbers.index(generation)
+    net = []
+    layer1 = []
+    for i in range(4):
+        layer1.append([numbers[i] for i in range(start+1, start+17)])
+        start += 16
+    net.append(layer1)
+    layer2 = []
+    for i in range(2):
+        layer2.append([numbers[i] for i in range(start + 1, start + 5)])
+        start += 4
+    net.append(layer2)
+
+    nn = RobotNN(net)
+    print(len(nn.network))
+    sim = Simulation()
+    sim.run(nn)
+    networks.close()
+
+def main():
+    #train()
+    test(50)
 
 
 if __name__ == "__main__":

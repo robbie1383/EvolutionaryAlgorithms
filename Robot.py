@@ -124,7 +124,7 @@ class Robot:
             self.theta = new_theta
             self.frontX, self.frontY = self.rotate(self.theta, self.radius)
         fit = self.fitness()
-        return fit, self.x, self.y
+        return [fit, self.x, self.y], [self.Vl, self.Vr, np.round(np.degrees(self.theta), 2), delta_t, test]
 
     def move(self, movement, delta_t, walls):
         # Check keys for movement
