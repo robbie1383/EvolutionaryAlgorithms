@@ -5,13 +5,17 @@ import time
 
 class RobotNN():
 
-    def __init__(self):
-        self.network = []
-        hiddenLayer = [np.random.rand(1, 16)[0] / 10 for i in range(4)]  # size + 1 for the bias
-        outputLayer = [np.random.rand(1, 4)[0] / 10 for i in range(2)]  # size + 1 for the bias
-        self.network.append(hiddenLayer)
-        self.network.append(outputLayer)
-        self.feedback = [0, 0, 0, 0]
+    def __init__(self, network):
+        if network is None:
+            self.network = []
+            hiddenLayer = [np.random.rand(1, 16)[0] / 10 for i in range(4)]  # size + 1 for the bias
+            outputLayer = [np.random.rand(1, 4)[0] / 10 for i in range(2)]  # size + 1 for the bias
+            self.network.append(hiddenLayer)
+            self.network.append(outputLayer)
+            self.feedback = [0, 0, 0, 0]
+        else :
+            self.network = network
+            self.feedback = [0, 0, 0, 0]
 
     def activations(self, input):
         activations = []
@@ -33,7 +37,7 @@ class RobotNN():
 class RobotEA():
 
     def __init__(self, room, delta_t, initPosition):
-        self.population = [RobotNN() for i in range(10)]
+        self.population = [RobotNN(None) for i in range(10)]
         self.room = room
         self.delta_t = delta_t
         self.initPosition = initPosition
@@ -81,8 +85,18 @@ class RobotEA():
 
     def reproduction(self, selected):
         children = []
+        children += selected
+        for i in range(len(selected)):
+            aux = []
+            for layer in range(len(selected[0].network)):
+                aux.append(np.mean([selected[0].network[layer], selected[i].network[layer]], 0))
+            children.append(RobotNN(aux))
+        return children
+"""
+    def reproduction(self, selected):
+        children = []
         middle = int(len(selected))
-
+        
         for index in range(middle):
             children.append(selected[index])
 
@@ -128,3 +142,5 @@ class RobotEA():
             children.append(selected[index])
 
         return children
+"""
+

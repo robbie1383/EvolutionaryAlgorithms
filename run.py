@@ -121,7 +121,7 @@ def plot(mins, means):
 
 def main():
     networks = open("networks.txt", "a")
-    iterations = 100
+    iterations = 50
     ea = RobotEA(room1, 0.01, initPosition)
     mins = []
     means = []
@@ -131,9 +131,10 @@ def main():
         min, avg, best = ea.evolve()
         mins.append(min)
         means.append(avg)
+        print("Average evaluation after learning:", avg)
 
-        if generation % 20 == 0:
-            print("Added generation ", generation, "to the file.\n")
+        if generation % 10 == 0:
+            print("Added generation ", generation, "to the file.")
             networks.write("Generation " + str(generation) + "\n")
             networks.write(str(best) + "\n")
 
