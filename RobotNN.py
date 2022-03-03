@@ -2,6 +2,9 @@ import numpy as np
 from Robot import Robot
 import time
 
+# Experiments parameter
+train_time = 30  # Experiments parameter
+
 
 class RobotNN():
 
@@ -58,7 +61,7 @@ class RobotEA():
             start = time.time()
             visited = []
             fitness = 0
-            while time.time() - start < 10:
+            while time.time() - start < train_time:
                 [Vl, Vr] = network.activations(robot.sensors)[1]
                 readings, _ = robot.moveFromVelocities(Vr, Vl, self.delta_t, self.room)
                 # visited.append(readings[1:])

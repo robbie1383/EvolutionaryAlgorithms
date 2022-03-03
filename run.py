@@ -10,14 +10,15 @@ sev = 35  # SCREEN_EDGE_VACANCY
 w = 900
 h = 900
 line0 = [(sev, sev), (sev, h - sev), (w - sev, h - sev), (w - sev, sev), (sev, sev)]
-line1 = [(300, sev), (300, 750)]
-line2 = [(600, sev), (600, 300)]
-line3 = [(600, 450), (600, h - sev)]
+line1 = [(300, sev), (300, 750), (340, 750), (340, sev)]
+line2 = [(600, sev), (600, 300), (640, 300), (640, sev)]
+line3 = [(640, h - sev), (640, 450), (600, 450), (600, h - sev)]
 room1 = [line0, line1, line2, line3]
+room2 = [line0]
 line_star = [(450, 50), (539, 327), (830, 326), (595, 496), (658, 773), (450, 602), (165, 773), (305, 496), (70, 326),
              (360, 327), (450, 50)]
 star_room = [line_star]
-chosen_room = room1
+chosen_room = room2
 initPosition = [400, 600]
 # A list of RGB values for the colours used in the game.
 WHITE = (255, 255, 255)
@@ -78,7 +79,7 @@ class Simulation:
 
     def run(self, nn, delta_t):
         while self.running:
-            self.clock.tick(100)
+            self.clock.tick(50)
             velocities = self.updatefromNN(delta_t, nn)
             self.show(velocities)
             self.clean_area.append([self.robot.x, self.robot.y])
@@ -107,7 +108,7 @@ class Simulation:
                 pygame.quit()
         [Vl, Vr] = nn.activations(self.robot.sensors)[1]
         _, velocities = self.robot.moveFromVelocities(Vr, Vl, delta_t, chosen_room)
-        print(velocities)
+        # print(velocities)
         return velocities
 
     def stop(self):
@@ -131,7 +132,7 @@ def plot(mins, means):
 
 def train(iterations, theta_t):
     networks = open("networks.txt", "w")
-    ea = RobotEA(room1, theta_t, initPosition)
+    ea = RobotEA(chosen_room, theta_t, initPosition)
     mins = []
     means = []
     print("Started learning.")
@@ -166,7 +167,6 @@ def display_result(generation, delta_t):
         layer2.append([numbers[i] for i in range(start + 1, start + 5)])
         start += 4
     net.append(layer2)
-
     nn = RobotNN(net)
     print(len(nn.network))
     sim = Simulation()
@@ -175,10 +175,10 @@ def display_result(generation, delta_t):
 
 
 def main():
-    delta_t = 0.09
-    generations = 10
+    delta_t = 0.1
+    generations = 50
     # train(generations, delta_t)
-    display_result(10, delta_t)
+    display_result(generations, delta_t)
 
 
 if __name__ == "__main__":
